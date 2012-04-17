@@ -13,11 +13,25 @@ data.
 Utilizing a 2012-04-17 version of the [FEC Scraper](https://github.com/cschnaars/FEC-Scraper)
 we are able to get the data from the FEC.
 
-### Dependencies
+### Setup
+
+We have to create a few places for things to go.  Create the user settings file:
 
 ```
-sudo pip install pyodbc;
-sudo pip install psycopg2;
+cp data-processing/usersettings.py.example usersettings.py;
+```
+
+Now, update ```data-processing/usersettings.py``` with the appropriate location;  It is suggested
+that you use something like this: ```/Users/USERNAME/Data/fec-scraper/``` (trailing slash is important)
+
+Then, finally, make sure that the sub directories exist.
+
+```
+mkdir -p ~/Data/fec-scraper/import;
+mkdir -p ~/Data/fec-scraper/output; 
+mkdir -p ~/Data/fec-scraper/processed; 
+mkdir -p ~/Data/fec-scraper/review; 
+```
 
 ### Scraping
 
@@ -26,10 +40,6 @@ some time as there are many files to download.  The code is assuming that you ar
 using the database set up from above.
 
 ```
-mkdir -p ~/Data/fec-scraper/import;
-mkdir -p ~/Data/fec-scraper/output; 
-mkdir -p ~/Data/fec-scraper/processed; 
-mkdir -p ~/Data/fec-scraper/review; 
 cd data-processing;
 python FECScraper.py;
 ```
