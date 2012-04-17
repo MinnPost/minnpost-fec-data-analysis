@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+#
+# Copy this file to usersettings.py and update values as
+# appropriate.
+#
+
+maindir = '/Users/USERNAME/Data/fec-scraper/'
