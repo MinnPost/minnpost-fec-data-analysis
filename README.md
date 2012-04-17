@@ -13,6 +13,14 @@ data.
 Utilizing a 2012-04-17 version of the [FEC Scraper](https://github.com/cschnaars/FEC-Scraper)
 we are able to get the data from the FEC.
 
+### Dependencies
+
+```
+sudo pip install pyodbc;
+sudo pip install psycopg2;
+
+### Scraping
+
 To scrape the data, use the following command.  Please note that this will take
 some time as there are many files to download.  The code is assuming that you are 
 using the database set up from above.
@@ -25,3 +33,8 @@ mkdir -p ~/Data/fec-scraper/review;
 cd data-processing;
 python FECScraper.py;
 ```
+
+## Technologies Use
+
+ - Postgres, PostGIS
+ - FEC-Scraper
