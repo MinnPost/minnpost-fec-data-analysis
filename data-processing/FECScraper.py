@@ -39,7 +39,7 @@ download filings for a particular committee.
 try:
     exec(open('usersettings.py').read())
 except:
-    maindir = '/Users/zzolo/Data/fec-scraper/'
+    maindir = '/Users/USERNAME/Data/fec-scraper/'
     connstr = 'DRIVER={Postgres};SERVER=localhost;DATABASE=minnpost_fec;UID=postgres;PWD=;'
     
 # Directories: You can edit these to customize file locations.

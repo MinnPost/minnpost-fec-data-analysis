@@ -32,8 +32,8 @@ For complete documentation, see the README file.
 try:
     exec(open('usersettings.py').read())
 except:
-    maindir = '/Users/zzolo/Data/fec-scraper/'
-    connstr = 'DRIVER={SQL Server};SERVER=;DATABASE=FEC;UID=;PWD=;'
+    maindir = '/Users/USERNAME/Data/fec-scraper/'
+    connstr = 'DRIVER={Postgres};SERVER=localhost;DATABASE=minnpost_fec;UID=postgres;PWD=;'
 
 # You can alter these to customize file locations
 sourcedir = maindir + 'import/'

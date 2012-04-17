@@ -8,7 +8,7 @@ data.
 1. See [these instructions](https://github.com/MinnPost/minnpost-basemaps/blob/master/README.md) for getting a PostGIS database up and running on a Mac.
 2. Create a new PostGIS database called ```minnpost_fec```.  This command should work: ```createdb -U postgres -h localhost -T template_postgis minnpost_fec```
 
-## Requiring Data
+## Acquiring Data
 
 Utilizing a 2012-04-17 version of the [FEC Scraper](https://github.com/cschnaars/FEC-Scraper)
 we are able to get the data from the FEC.
@@ -42,6 +42,14 @@ using the database set up from above.
 ```
 cd data-processing;
 python FECScraper.py;
+```
+
+## Process Data
+
+Now, we will use the FEC Parser to create usable files with this data.  Run the following:
+
+```
+python FECParser.py;
 ```
 
 ## Technologies Use
