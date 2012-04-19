@@ -40,7 +40,8 @@ some time as there are many files to download.  The code is assuming that you ar
 using the database set up from above.
 
 ```
-python data-processing/FECScraper.py;
+cd data-processing;
+python FECScraper.py;
 ```
 
 ## Process Data
@@ -48,6 +49,7 @@ python data-processing/FECScraper.py;
 Now, we will use the FEC Parser to create usable files with this data.  Run the following:
 
 ```
+cd data-processing;
 python data-processing/FECParser.py;
 ```
 
@@ -62,6 +64,13 @@ line, but will have to figure that out first.
 Use the following tables names for there respective groups of text files:
 
  - ScheduleAImport
+ 
+### Get Zip Outlines
+
+```
+wget http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip;
+shp2psql
+```
 
 ## Explanation of FEC Data
 
@@ -88,8 +97,18 @@ Use the following tables names for there respective groups of text files:
 
  - https://scraperwiki.com/scrapers/fec_mn_2012_pacs_and_parties/
 
-## Technologies Use
+## Technologies Used
 
  - Postgres, PostGIS
  - FEC-Scraper
  - Scraper Wiki
+ 
+## Other Data Sources
+
+ - Zip Code shapefiles from the [US Census Bureau](http://www.census.gov/geo/www/cob/z52000.html), 2000 data.  [Minnesota shapefile](http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip)
+ 
+## Federal Election Commission (FEC) help
+
+ - [Policy on use of data](http://fec.gov/pubrec/publicrecordsoffice.shtml#using)
+ - [Vendor tools](http://www.fec.gov/elecfil/vendors.shtml): various tools, including an explanation of forms, schedules, fields, etc.  Relevant file in the ```help``` directory.
+ - [Reporting data](http://www.fec.gov/info/report_dates.shtml)
