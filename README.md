@@ -74,6 +74,14 @@ line, but will have to figure that out first.
 Use the following tables names for there respective groups of text files:
 
  - ScheduleAImport
+ 
+### Committee Data
+
+Import in committee data.
+
+```
+psql -U postgres -h localhost < data-processing/committees/committees.sql;
+```
 
 ## Explanation of FEC Data
 
