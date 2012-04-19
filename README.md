@@ -67,9 +67,12 @@ Use the following tables names for there respective groups of text files:
  
 ### Get Zip Outlines
 
+The following will download the relevant shapefile and import it into PostGIS.
+
 ```
 wget http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip;
-shp2psql
+unzip zt27_d00_shp.zip -d zt27_d00;
+shp2pgsql -c -I -s 4326 zt27_d00/zt27_d00 mn_zip | psql -U postgres -h localhost minnpost_fec;
 ```
 
 ## Explanation of FEC Data
