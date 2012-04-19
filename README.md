@@ -18,10 +18,10 @@ we are able to get the data from the FEC.
 We have to create a few places for things to go.  Create the user settings file:
 
 ```
-cp data-processing/usersettings.py.example usersettings.py;
+cp data-processing/fec/usersettings.py.example data-processing/fec/usersettings.py;
 ```
 
-Now, update ```data-processing/usersettings.py``` with the appropriate location;  It is suggested
+Now, update ```data-processing/fec/usersettings.py``` with the appropriate location;  It is suggested
 that you use something like this: ```/Users/USERNAME/Data/fec-scraper/``` (trailing slash is important)
 
 Then, finally, make sure that the sub directories exist.
@@ -40,8 +40,18 @@ some time as there are many files to download.  The code is assuming that you ar
 using the database set up from above.
 
 ```
-cd data-processing;
+cd data-processing/fec;
 python FECScraper.py;
+```
+ 
+### Get Zip Outlines
+
+The following will download the relevant shapefile and import it into PostGIS.
+
+```
+wget http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip;
+unzip zt27_d00_shp.zip -d zt27_d00;
+shp2pgsql -c -I -s 4326 zt27_d00/zt27_d00 mn_zip | psql -U postgres -h localhost minnpost_fec;
 ```
 
 ## Process Data
@@ -49,7 +59,7 @@ python FECScraper.py;
 Now, we will use the FEC Parser to create usable files with this data.  Run the following:
 
 ```
-cd data-processing;
+cd data-processing/fec;
 python data-processing/FECParser.py;
 ```
 
@@ -64,16 +74,6 @@ line, but will have to figure that out first.
 Use the following tables names for there respective groups of text files:
 
  - ScheduleAImport
- 
-### Get Zip Outlines
-
-The following will download the relevant shapefile and import it into PostGIS.
-
-```
-wget http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip;
-unzip zt27_d00_shp.zip -d zt27_d00;
-shp2pgsql -c -I -s 4326 zt27_d00/zt27_d00 mn_zip | psql -U postgres -h localhost minnpost_fec;
-```
 
 ## Explanation of FEC Data
 
@@ -108,10 +108,11 @@ shp2pgsql -c -I -s 4326 zt27_d00/zt27_d00 mn_zip | psql -U postgres -h localhost
  
 ## Other Data Sources
 
- - Zip Code shapefiles from the [US Census Bureau](http://www.census.gov/geo/www/cob/z52000.html), 2000 data.  [Minnesota shapefile](http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip)
+ - Zip Code shapefiles from the [US Census Bureau](http://www.census.gov/geo/www/cob/z52000.html), 2000 data.  [Minnesota shapefile](http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip).  Zip code max extent: "-97.239209,43.499356,-89.489226,49.384358".
  
 ## Federal Election Commission (FEC) help
 
  - [Policy on use of data](http://fec.gov/pubrec/publicrecordsoffice.shtml#using)
  - [Vendor tools](http://www.fec.gov/elecfil/vendors.shtml): various tools, including an explanation of forms, schedules, fields, etc.  Relevant file in the ```help``` directory.
  - [Reporting data](http://www.fec.gov/info/report_dates.shtml)
+ - Regarding Schedule A, Donor fields used if Entity Types are CCM, PAC or PTY.
