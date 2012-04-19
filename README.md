@@ -40,8 +40,7 @@ some time as there are many files to download.  The code is assuming that you ar
 using the database set up from above.
 
 ```
-cd data-processing;
-python FECScraper.py;
+python data-processing/FECScraper.py;
 ```
 
 ## Process Data
@@ -49,10 +48,48 @@ python FECScraper.py;
 Now, we will use the FEC Parser to create usable files with this data.  Run the following:
 
 ```
-python FECParser.py;
+python data-processing/FECParser.py;
 ```
+
+### Put Data into Postgres
+
+FEC Parse will create tab-delimited text files in the ```output``` directory.  These are named with
+a time stamp and represent processed files since the last Parse run.
+
+I used Navicat to import these into Postgres.  I am sure there is a way to do this with the command
+line, but will have to figure that out first.
+
+Use the following tables names for there respective groups of text files:
+
+ - ScheduleAImport
+
+## Explanation of FEC Data
+
+ - Schedule A: Contributions (Itemized Receipts)
+ - Schedule B: Spending (Itemized Disbursements)
+ - Schedule C1: ??
+ - Schedule C2: ??
+ - Schedule D: Debt
+ - Schedule E: ??
+ - Form 3P Headers: Summary (for monthly??)
+ - Cont* = Contributors fields
+ 
+## Committees
+
+### President Candidates
+
+ - C00431445: Obama
+ - C00431171: Romney
+ - C00495820: Paul
+ - C00496497: Gingrich
+ - C00496034: Santorum
+ 
+### Minnesota PACs and Parties
+
+ - https://scraperwiki.com/scrapers/fec_mn_2012_pacs_and_parties/
 
 ## Technologies Use
 
  - Postgres, PostGIS
  - FEC-Scraper
+ - Scraper Wiki
