@@ -1,13 +1,16 @@
-
+-- Top sum contributions
 SELECT DISTINCT
 	CASE 
 		WHEN s."ContOrgName" NOT IN ('', ',') THEN s."ContOrgName"
 		ELSE (INITCAP(s."ContLastName") || ', ' || INITCAP(s."ContFirstName"))
 		END AS name,
+	INITCAP(s."ContCity") AS city,
+	CASE
+		WHEN UPPER(s."ContEmployer") IN ('NONE', 'REFUSED', 'INFORMATION REQUESTED') THEN ''
+		ELSE INITCAP(s."ContEmployer")
+		END  as employer,
 	TRIM(' ' FROM TO_CHAR(SUM(CAST(s."ContAmount" AS FLOAT)), '999G999G999G999D99')) AS sum_amount,
-	c."candidate_name",
-	COUNT(s."TransID") AS Transactions,
-	s."EntityType"
+	c."candidate_name" AS candidate
 FROM 
 	"ScheduleAImport" AS s
 	JOIN "committees" AS c
@@ -22,10 +25,11 @@ GROUP BY
 	s."ContOrgName",
 	s."EntityType",
 	s."ContLastName",
-	s."ContFirstName"
+	s."ContFirstName",
+	s."ContCity",
+	s."ContEmployer"
 HAVING 
 	SUM(CAST(s."ContAmount" AS FLOAT)) > 500
 ORDER BY
-	sum_amount DESC,
 	name
 ;
