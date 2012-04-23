@@ -32,6 +32,7 @@
         font-style: italic;
         color: #414141;
         margin-top: 1em;
+        clear: both;
       }
       
       body table.dataTable tr.odd,
@@ -108,13 +109,20 @@
     
     <div class="table-container">
       <table id="q1-table">
+        <tfoot><tr><th colspan="5"></th></tr></tfoot>
+      </table>
     </div>
     
-    <p class="footnote"></p>
+    <p class="footnote">Data from the <a href-"http://www.fec.gov/">Federal Election Commission</a>.</p>
   
     <script type="text/javascript">window.jQuery || document.write('<script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/lib/jquery-1.5.2.min.js"><\/script>')</script>
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/datatables-1.9.0/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
+      Number.prototype.formatMoney = function(c, d, t) {
+        var n = this, c = isNaN(c = Math.abs(c)) ? 2 : c, d = d == undefined ? "," : d, t = t == undefined ? "." : t, s = n < 0 ? "-" : "", i = parseInt(n = Math.abs(+n || 0).toFixed(c)) + "", j = (j = i.length) > 3 ? j % 3 : 0;
+        return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
+      };
+    
       // Extra sorting for data tables
       jQuery.fn.dataTableExt.oSort['formatted-num-asc'] = function(a,b) {
         /* Remove any formatting */
@@ -134,8 +142,8 @@
       (function($) {
         $(document).ready(function() {
         
-          $.getJSON('data/fec_q1_contributions_by_entity.json', function(data) {
-            
+          // Function to handle creating table, given data
+          function createTable(data) {
             // Define table
             var Q1Table = $('#q1-table').dataTable({
               'aaData': data,
@@ -147,7 +155,27 @@
                 { 'sTitle': 'Type', 'mDataProp': 'EntityType' }
               ],
               'aaSorting': [[ 1, 'desc' ]],
-              'iDisplayLength': 25
+              'iDisplayLength': 25,
+              'aLengthMenu': [[10, 15, 25, -1], [10, 15, 25, 'All']],
+              'fnFooterCallback': function(footerRow, aaData, iStart, iEnd, aiDisplay) {
+                // Total amount 
+                /*
+                var totalAmount = 0;
+                for (var i = 0; i < aaData.length; i++) {
+                  totalAmount += aaData[i]['sum_amount'].replace( /[^\d\-\.]/g, '') * 1;
+                }
+                */
+             
+                // Amount showing
+                var totalPage = 0;
+                for (var i = iStart; i < iEnd; i++) {
+                  totalPage += aaData[aiDisplay[i]]['sum_amount'].replace( /[^\d\-\.]/g, '') * 1;
+                }
+             
+                // Display in footer
+                $('#q1-table tfoot th').html('Total amount on this page: $' + 
+                  totalPage.formatMoney(2, '.', ','));
+              }
             }); 
           
             // Add filter links
@@ -165,8 +193,18 @@
               
               $('.filter-links a').removeClass('filtering');
               $thisLink.addClass('filtering');
-            }); 
-          });
+            });
+          }
+          
+          // Use JSON request if data is not embedded.
+          if (typeof q1Data == 'undefined') {
+            $.getJSON('data/fec_q1_contributions_by_entity.json', function(requestData) {
+              createTable(requestData);
+            });
+          }
+          else {
+            createTable(q1Data);
+          }
         });
       })(jQuery);
     </script>
