@@ -17,7 +17,7 @@
 
 
   <!-- Embed Start -->
-  <div class="node-body fieldlayout node-field-body">
+  <div class="embeddable">
     <style type="text/css">
     	@import url('http://data.minnpost.s3.amazonaws.com/js/datatables-1.9.0/css/jquery.dataTables.css');
     </style>
@@ -67,6 +67,26 @@
         margin-top: 1em;
       }
       
+      .filter-links {
+        margin: 1em 0;
+      }
+      .filter-links label {
+        display: inline;
+        font-weight: bold;
+      }
+      .filter-links ul {
+        list-style: none;
+        display: inline;
+      }
+      .filter-links ul li {
+        list-style: none;
+        display: inline;
+        margin-right: 1em;
+      }
+      .filter-links ul li a.filtering {
+        font-weight: bold;
+      }
+      
       /** Media queries **/
       @media all and (max-width: 750px) {
       }
@@ -74,9 +94,20 @@
   
     <h3>Top Contributions in 2012 Q1</h3>
     
+    <div class="filter-links hide">
+      <label>Filter:</label>
+      <ul>
+        <li><a class="filter-link" href="#obama">Barak Obama</a></li>
+        <li><a class="filter-link" href="#romney">Mitt Romney</a></li>
+        <li><a class="filter-link" href="#santorum">Rick Santorum</a></li>
+        <li><a class="filter-link" href="#gingrich">Newt Gingrich</a></li>
+        <li><a class="filter-link" href="#paul">Ron Paul</a></li>
+        <li><a class="filter-link filter-clear" href="#clera">Show all</a></li>
+      </ul>
+    </div>
+    
     <div class="table-container">
       <table id="q1-table">
-      </table>
     </div>
     
     <p class="footnote"></p>
@@ -104,9 +135,9 @@
         $(document).ready(function() {
         
           $.getJSON('data/fec_q1_contributions_by_entity.json', function(data) {
-            console.log(data);
             
-            $('#q1-table').dataTable({
+            // Define table
+            var Q1Table = $('#q1-table').dataTable({
               'aaData': data,
               'aoColumns': [
                 { 'sTitle': 'Name', 'mDataProp': 'name' },
@@ -117,9 +148,25 @@
               ],
               'aaSorting': [[ 1, 'desc' ]],
               'iDisplayLength': 25
-            });  
+            }); 
+          
+            // Add filter links
+            $('.filter-links').show();
+            $('.filter-links a').click(function(e) {
+              e.preventDefault();
+              var $thisLink = $(this);
+              
+              if ($thisLink.hasClass('filter-clear')) {
+                Q1Table.fnFilter('', 2);
+              }
+              else {
+                Q1Table.fnFilter($thisLink.text(), 2);
+              }
+              
+              $('.filter-links a').removeClass('filtering');
+              $thisLink.addClass('filtering');
+            }); 
           });
-
         });
       })(jQuery);
     </script>
