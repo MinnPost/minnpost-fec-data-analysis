@@ -82,6 +82,16 @@ Import in committee data.
 ```
 psql -U postgres -h localhost < data-processing/committees/committees.sql;
 ```
+ 
+### Generate Dot Density
+
+Process schedule data to dots.
+
+```
+cd data-processing/dots;
+sudo pip install -r requirements.txt;
+python dotify.py;
+```
 
 ## Explanation of FEC Data
 
