@@ -19,7 +19,7 @@
   <!-- Embed Start -->
   <div class="node-body fieldlayout node-field-body">
     <style type="text/css">
-      @import url('https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/src/css/bubbletree.css');
+    	@import url('http://data.minnpost.s3.amazonaws.com/js/datatables-1.9.0/css/jquery.dataTables.css');
     </style>
     <style type="text/css">
       .js-dependent,
@@ -34,6 +34,39 @@
         margin-top: 1em;
       }
       
+      body table.dataTable tr.odd,
+      body table.dataTable tr.odd td.sorting_1 {
+        background-color: #FDFDFD;
+      }
+      body table.dataTable tr.even,
+      body table.dataTable tr.even td.sorting_1 {
+        background-color: #EDEDED;
+      }
+      
+      table td.leaning-dfl,
+      body table.dataTable td.leaning-dfl,
+      body table.dataTable tr td.leaning-dfl.sorting_1 {
+        background-color: #809FBC;
+        background-color: #A8BDD1;
+      }
+      table td.leaning-r,
+      body table.dataTable td.leaning-r,
+      body table.dataTable tr td.leaning-r.sorting_1 {
+        background-color: #A75859;
+        background-color: #B9797A;
+      }
+      .dataTables_length,
+      .dataTables_filter,
+      .dataTables_info,
+      .dataTables_paginate {
+        color: #888888;
+        margin-bottom: 1em;
+      }
+      .dataTables_info,
+      .dataTables_paginate {
+        margin-top: 1em;
+      }
+      
       /** Media queries **/
       @media all and (max-width: 750px) {
       }
@@ -41,11 +74,12 @@
   
     <h3>Top Contributions in 2012 Q1</h3>
     
+    <div class="table-container"></div>
+    
     <p class="footnote"></p>
   
     <script type="text/javascript">window.jQuery || document.write('<script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/lib/jquery-1.5.2.min.js"><\/script>')</script>
-    
-    <script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/lib/jquery.history.js"></script>
+    <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/datatables-1.9.0/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
       // Namespace jQuery
       (function($) {
