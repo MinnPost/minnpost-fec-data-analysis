@@ -93,6 +93,16 @@ sudo pip install -r requirements.txt;
 python dotify.py;
 ```
 
+## Visualizations
+
+### Q1 Table
+
+To process data for ```q1_top_contributions.html```, do the following:
+
+1. Run ```data-queries/fec_q1_contributions_by_entity.sql```
+2. Convert to JSON.  I exported the query results to CSV, then used CSVKit's ```csvjson``` to convert to JSON.
+3. Load visualization page in browser.
+
 ## Explanation of FEC Data
 
  - Schedule A: Contributions (Itemized Receipts)

@@ -74,7 +74,10 @@
   
     <h3>Top Contributions in 2012 Q1</h3>
     
-    <div class="table-container"></div>
+    <div class="table-container">
+      <table id="q1-table">
+      </table>
+    </div>
     
     <p class="footnote"></p>
   
@@ -85,8 +88,21 @@
       (function($) {
         $(document).ready(function() {
         
-        
-        
+          $.getJSON('data/fec_q1_contributions_by_entity.json', function(data) {
+            console.log(data);
+            
+            $('#q1-table').dataTable({
+              'aaData': data,
+              'aoColumns': [
+                { 'sTitle': 'Name', 'mDataProp': 'name' },
+                { 'sTitle': 'Amount', 'mDataProp': 'sum_amount' },
+                { 'sTitle': 'Transactions', 'mDataProp': 'transactions' },
+                { 'sTitle': 'Candidate', 'mDataProp': 'candidate_name' },
+                { 'sTitle': 'Type', 'mDataProp': 'EntityType' }
+              ]
+            });  
+          });
+
         });
       })(jQuery);
     </script>

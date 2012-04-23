@@ -1,9 +1,10 @@
+
 SELECT DISTINCT
 	CASE 
 		WHEN s."ContOrgName" NOT IN ('', ',') THEN s."ContOrgName"
 		ELSE (INITCAP(s."ContLastName") || ', ' || INITCAP(s."ContFirstName"))
 		END AS name,
-	to_char(SUM(CAST(s."ContAmount" AS FLOAT)), '999G999G999G999D99') AS sum_amount,
+	TRIM(' ' FROM TO_CHAR(SUM(CAST(s."ContAmount" AS FLOAT)), '999G999G999G999D99')) AS sum_amount,
 	c."candidate_name",
 	COUNT(s."TransID") AS Transactions,
 	s."EntityType"
