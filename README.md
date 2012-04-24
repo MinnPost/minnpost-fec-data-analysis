@@ -22,7 +22,7 @@ we are able to get the data from the FEC.  We are also getting zip data and putt
 2. Basic setup tasks: ```fab setup;```
 3. Scrape FEC data; could take some time: ```fab scrape;```
 4. Get zips and put in DB: ```fab zips;```
-5. Create committees table: ```fab committees```
+5. Create committees table: ```fab committees;```
 
 ## Process Data
 
@@ -44,12 +44,13 @@ Use the following tables names for there respective groups of text files:
 
  - ScheduleAImport
  
-### Generate Dot Density
+### Generate Dot Density Map
 
-Process schedule data to dots.
+Process schedule data to dots and create map.
 
 1. Get requirements, use virtual environment if you want: ```sudo pip install -r data-processing/dots/requirements.txt;```
 2. Dot density processing: ```fab dots;```
+3. Link Tilemill projects: ```fab tilemill_link;```
 
 ## Visualizations
 

@@ -16,6 +16,17 @@ env.pg_dbname = 'minnpost_fec'
 env.pg_user = 'postgres'
 env.pg_pass = ''
 
+# Tilemill paths.  For Ubuntu
+if os.path.exists('/usr/share/tilemill'):
+  env.tilemill_path = '/usr/share/tilemill'
+  env.tilemill_projects = '/usr/share/mapbox/project'
+  env.node_path = '/usr/bin/node'
+# OSX
+else:
+  env.tilemill_path = '/Applications/TileMill.app/Contents/Resources'
+  env.tilemill_projects = '~/Documents/MapBox/project'
+  env.node_path = '%(tilemill_path)s/node' % env
+
 
 """
 Environments
@@ -121,6 +132,14 @@ def dots():
   print 'Creating dots...'
   dots = DotDensityPlotter(source, source_layer, dest_driver, dest, dest_layer, get_data, dots_per)
   dots.plot()
+
+
+def tilemill_link():
+  """
+  Link projects for easy versioning
+  """
+  env.base_path = os.getcwd()
+  local(('ln -s %(base_path)s/tilemill/fec-q1-dot-density/ %(tilemill_projects)s/fec-q1-dot-density') % env)
 
 
 """

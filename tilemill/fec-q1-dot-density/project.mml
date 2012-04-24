@@ -1,0 +1,72 @@
+{
+  "bounds": [
+    -98.2617,
+    42.9564,
+    -89.0332,
+    49.6107
+  ],
+  "center": [
+    -94.3066,
+    45.8288,
+    6
+  ],
+  "format": "png",
+  "interactivity": {
+    "layer": "fec-zip-stats",
+    "template_teaser": ""
+  },
+  "minzoom": 6,
+  "maxzoom": 14,
+  "srs": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over",
+  "Stylesheet": [
+    "style.mss"
+  ],
+  "Layer": [
+    {
+      "geometry": "polygon",
+      "Datasource": {
+        "type": "postgis",
+        "table": "( SELECT * FROM fec_amount_by_zip ) AS data",
+        "extent": "-97.239209,43.499356,-89.489226,49.384358",
+        "key_field": "",
+        "geometry_field": "the_geom",
+        "host": "localhost",
+        "user": "postgres",
+        "dbname": "minnpost_fec",
+        "id": "fec-zip-stats",
+        "project": "minnpost-fec-analysis",
+        "srs": null
+      },
+      "id": "fec-zip-stats",
+      "class": "",
+      "srs-name": "WGS84",
+      "srs": "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+      "name": "fec-zip-stats"
+    },
+    {
+      "geometry": "point",
+      "Datasource": {
+        "type": "postgis",
+        "table": "( SELECT * FROM scheduleaimport_dots ) as data",
+        "extent": "-97.239209,43.499356,-89.489226,49.384358",
+        "key_field": "ogc_fid",
+        "geometry_field": "wkb_geometry",
+        "host": "localhost",
+        "user": "postgres",
+        "dbname": "minnpost_fec",
+        "id": "fec-dot-density",
+        "project": "minnpost-fec-analysis",
+        "srs": null
+      },
+      "id": "fec-dot-density",
+      "class": "",
+      "srs-name": "WGS84",
+      "srs": "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs",
+      "name": "fec-dot-density"
+    }
+  ],
+  "name": "2012 Q1 Dot Density",
+  "description": "Dot density map of presidential campaign contributions from Minnesota for the first quarter of 2012.",
+  "attribution": "",
+  "legend": ""
+}
