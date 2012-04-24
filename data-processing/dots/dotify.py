@@ -26,15 +26,15 @@ def get_data(feature):
 
 # From PostGIS, see setup in README.md
 source = "PG: host=localhost dbname='minnpost_fec' user='postgres'"
-source_layer = 'fec_totals_by_zip'
+source_layer = 'fec_amount_by_zip'
 
 # Output to new PostGIS table
 dest_driver = 'PostgreSQL'
 dest = 'PG:dbname=minnpost_fec host=localhost user=postgres'
 dest_layer = 'ScheduleAImport_dots'
 
-# Dots
-dots_per = 1
+# Dots per dollar
+dots_per = 20
 
 # Perform density plotting
 dots = DotDensityPlotter(source, source_layer, dest_driver, dest, dest_layer, get_data, dots_per)
