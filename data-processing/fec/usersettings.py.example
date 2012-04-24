@@ -5,4 +5,6 @@
 # appropriate.
 #
 
-maindir = '/Users/USERNAME/Data/fec-scraper/'
+import os
+
+maindir = os.path.expanduser('~/Data/fec-scraper/')

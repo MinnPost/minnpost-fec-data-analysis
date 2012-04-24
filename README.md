@@ -1,6 +1,6 @@
 Data analysis of FEC Campaign data.
 
-## Setup Database
+## Dependencies
 
 We will use a PostGIS database to handle some overhead and store the
 data.
@@ -8,64 +8,33 @@ data.
 1. See [these instructions](https://github.com/MinnPost/minnpost-basemaps/blob/master/README.md) for getting a PostGIS database up and running on a Mac.
 2. Create a new PostGIS database called ```minnpost_fec```.  This command should work: ```createdb -U postgres -h localhost -T template_postgis minnpost_fec```
 
+On a Mac, use Brew to get other dependencies.
+
+ - [Install Homebrew](https://github.com/mxcl/homebrew/wiki/installation)
+ - ```brew install wget```
+
 ## Acquiring Data
 
 Utilizing a 2012-04-17 version of the [FEC Scraper](https://github.com/cschnaars/FEC-Scraper)
-we are able to get the data from the FEC.
+we are able to get the data from the FEC.  We are also getting zip data and putting into the DB.
 
-### Setup
-
-We have to create a few places for things to go.  Create the user settings file:
-
-```
-cp data-processing/fec/usersettings.py.example data-processing/fec/usersettings.py;
-```
-
-Now, update ```data-processing/fec/usersettings.py``` with the appropriate location;  It is suggested
-that you use something like this: ```/Users/USERNAME/Data/fec-scraper/``` (trailing slash is important)
-
-Then, finally, make sure that the sub directories exist.
-
-```
-mkdir -p ~/Data/fec-scraper/import;
-mkdir -p ~/Data/fec-scraper/output; 
-mkdir -p ~/Data/fec-scraper/processed; 
-mkdir -p ~/Data/fec-scraper/review; 
-```
-
-### Scraping
-
-To scrape the data, use the following command.  Please note that this will take
-some time as there are many files to download.  The code is assuming that you are 
-using the database set up from above.
-
-```
-cd data-processing/fec;
-python FECScraper.py;
-```
- 
-### Get Zip Outlines
-
-The following will download the relevant shapefile and import it into PostGIS.
-
-```
-wget http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip;
-unzip zt27_d00_shp.zip -d zt27_d00;
-shp2pgsql -c -I -s 4326 zt27_d00/zt27_d00 mn_zip | psql -U postgres -h localhost minnpost_fec;
-```
+1. We need Fabric: ```sudo pip install fabric;```
+2. Basic setup tasks: ```fab setup;```
+3. Scrape FEC data; could take some time: ```fab scrape;```
+4. Get zips and put in DB: ```fab zips;```
+5. Create committees table: ```fab committees```
 
 ## Process Data
 
 Now, we will use the FEC Parser to create usable files with this data.  Run the following:
 
 ```
-cd data-processing/fec;
-python data-processing/FECParser.py;
+fab parse;
 ```
 
 ### Put Data into Postgres
 
-FEC Parse will create tab-delimited text files in the ```output``` directory.  These are named with
+FEC Parse will create tab-delimited text files in the ```~/Data/fec/output``` directory.  These are named with
 a time stamp and represent processed files since the last Parse run.
 
 I used Navicat to import these into Postgres.  I am sure there is a way to do this with the command
@@ -75,23 +44,12 @@ Use the following tables names for there respective groups of text files:
 
  - ScheduleAImport
  
-### Committee Data
-
-Import in committee data.
-
-```
-psql -U postgres -h localhost < data-processing/committees/committees.sql;
-```
- 
 ### Generate Dot Density
 
 Process schedule data to dots.
 
-```
-cd data-processing/dots;
-sudo pip install -r requirements.txt;
-python dotify.py;
-```
+1. Get requirements, use virtual environment if you want: ```sudo pip install -r data-processing/dots/requirements.txt;```
+2. Dot density processing: ```fab dots;```
 
 ## Visualizations
 
