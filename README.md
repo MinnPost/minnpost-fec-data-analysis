@@ -61,31 +61,6 @@ To process data for ```q1_top_contributions.html```, do the following:
 2. Convert to JSON.  I exported the query results to CSV, then used CSVKit's ```csvjson``` to convert to JSON.
 3. Copy JSON into the ```visualizations/q1_top_contributions.html```.
 
-## Explanation of FEC Data
-
- - Schedule A: Contributions (Itemized Receipts)
- - Schedule B: Spending (Itemized Disbursements)
- - Schedule C1: ??
- - Schedule C2: ??
- - Schedule D: Debt
- - Schedule E: ??
- - Form 3P Headers: Summary (for monthly??)
- - Cont* = Contributors fields
- 
-## Committees
-
-### President Candidates
-
- - C00431445: Obama
- - C00431171: Romney
- - C00495820: Paul
- - C00496497: Gingrich
- - C00496034: Santorum
- 
-### Minnesota PACs and Parties
-
- - https://scraperwiki.com/scrapers/fec_mn_2012_pacs_and_parties/
-
 ## Technologies Used
 
  - Postgres, PostGIS
@@ -94,11 +69,5 @@ To process data for ```q1_top_contributions.html```, do the following:
  
 ## Other Data Sources
 
- - Zip Code shapefiles from the [US Census Bureau](http://www.census.gov/geo/www/cob/z52000.html), 2000 data.  [Minnesota shapefile](http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip).  Zip code max extent: "-97.239209,43.499356,-89.489226,49.384358".
- 
-## Federal Election Commission (FEC) help
-
- - [Policy on use of data](http://fec.gov/pubrec/publicrecordsoffice.shtml#using)
- - [Vendor tools](http://www.fec.gov/elecfil/vendors.shtml): various tools, including an explanation of forms, schedules, fields, etc.  Relevant file in the ```help``` directory.
- - [Reporting data](http://www.fec.gov/info/report_dates.shtml)
- - Regarding Schedule A, Donor fields used if Entity Types are CCM, PAC or PTY.
+ - Zip Code shapefiles from the [US Census Bureau](http://www.census.gov/geo/www/cob/z52000.html), 2000 data.  [Minnesota shapefile](http://www.census.gov/geo/cob/bdy/zt/z500shp/zt27_d00_shp.zip).
+ - Zip code max extent: "-97.239209,43.499356,-89.489226,49.384358".
