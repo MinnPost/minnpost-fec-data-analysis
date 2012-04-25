@@ -13,7 +13,7 @@
   "format": "png",
   "interactivity": {
     "layer": "fec-zip-stats",
-    "template_teaser": "",
+    "template_teaser": "<div class=\"popup-zip\"><strong>{{{zip}}}</strong></div>",
     "fields": []
   },
   "minzoom": 6,
@@ -69,5 +69,5 @@
   "name": "2012 Q1 Dot Density",
   "description": "Dot density map of presidential campaign contributions from Minnesota for the first quarter of 2012.",
   "attribution": "",
-  "legend": ""
+  "legend": "<ul>\n<li><span style=\"color:#40A2E7;\">█</span> - Obama</li>\n<li><span style=\"color:#E7404E;\">█</span> - Romney</li>\n<li><span style=\"color:#EE7781;\">█</span> - Santorum</li>\n<li><span style=\"color:#EB606C;\">█</span> - Gingrich</li>\n<li><span style=\"color:#E94957;\">█</span> - Paul</li>\n</ul>"
 }
