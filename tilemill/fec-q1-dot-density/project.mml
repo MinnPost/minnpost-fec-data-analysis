@@ -13,7 +13,8 @@
   "format": "png",
   "interactivity": {
     "layer": "fec-zip-stats",
-    "template_teaser": ""
+    "template_teaser": "",
+    "fields": []
   },
   "minzoom": 6,
   "maxzoom": 14,

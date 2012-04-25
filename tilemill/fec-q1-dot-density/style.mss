@@ -8,7 +8,8 @@
 
 // Background for working with data
 Map {
-  background-color: #1A1818;
+  background-color: @bg;
+  background-color: transparent;
 }
 
 // Default sizes
