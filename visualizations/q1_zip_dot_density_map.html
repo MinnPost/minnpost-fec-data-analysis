@@ -56,13 +56,15 @@
     		$(document).ready(function() {
   		    var map = new L.Map('dd-map');
   		    
-    	    var baseurl = 'https://s3.amazonaws.com/{s}.tiles.minnpost/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
-    	    var ddurl = 'https://s3.amazonaws.com/{s}.tiles.minnpost/minnpost-basemaps/fec-q1-dot-density/{z}/{x}/{y}.png';
+    	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
+    	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
+    	    var ddurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png';
     	    var options = { maxZoom: 15, minZoom: 2, scheme: 'tms' };
     	    
       		var baselayer = new L.TileLayer(baseurl, options);
       		var ddlayer = new L.TileLayer(ddurl, options);
-      		map.setView(new L.LatLng(46.1494,-94.4495), 7).addLayer(baselayer).addLayer(ddlayer);
+      		var labelslayer = new L.TileLayer(labelsurl, options);
+      		map.setView(new L.LatLng(46.1494,-94.4495), 7).addLayer(baselayer).addLayer(ddlayer).addLayer(labelslayer);
     		});
       })(jQuery);
     </script>
