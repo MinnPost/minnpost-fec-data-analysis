@@ -76,6 +76,23 @@
       .wax-legend ul li {
         list-style: none;
       }
+      
+      .tooltip {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 20;
+        -moz-border-radius: 4px;
+        -webkit-border-radius: 4px;
+        border-radius: 4px;
+        min-width: 140px;
+        min-height: 100px;
+        background-color: #CCCCCC;
+        background-color: rgba(255, 255, 255, 0.65);
+      }
+      .tooltip.hiding {
+        display: none;
+      }
     </style>
     
   	<div id="dd-map"></div>
@@ -83,61 +100,102 @@
   	<p class="footnote">Data from the <a href="http://www.fec.gov/">Federal Election Commission</a>.</p>
   
     <script type="text/javascript">window.jQuery || document.write('<script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/lib/jquery-1.5.2.min.js"><\/script>')</script>
-    <script type="text/javascript" src="http://leaflet.cloudmade.com//dist/leaflet.js"></script>
+    <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/leaflet-0.3.1/leaflet.js"></script>
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/wax-master-20120329/wax.leaf.min.js"></script>
     <script type="text/javascript">
   		
       // Namespace jQuery
       (function($) {
     		$(document).ready(function() {
-  		    var map = new L.Map('dd-map', { maxZoom: 13, minZoom: 6 });
+  		    var map = new L.Map('dd-map', { maxZoom: 14, minZoom: 2 });
   		    
-  		    // Base base layer
-          wax.tilejson('http://a.tiles.mapbox.com/v3/zzolo.map-rhqrrivf.jsonp',
+	        // Define mn base and label layers.  We have to force the TMS version of mapbox
+	        // tiles.  See: https://github.com/mapbox/wax/issues/95
+    	    var options = { scheme: 'tms' };
+    	    var osmbaseurl = 'http://{s}.tiles.mapbox.com/v1/zzolo.map-rhqrrivf/{z}/{x}/{y}.png';
+    	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
+    	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
+      		var osmbaselayer = new L.TileLayer(osmbaseurl, options);
+      		var baselayer = new L.TileLayer(baseurl, options);
+      		var labelslayer = new L.TileLayer(labelsurl, options);
+      		
+      		// Add metro area button
+      		$('<div></div>')
+      		  .addClass('metro-button')
+      		  .attr('title', 'Click to zoom to the Twin Cities metro area.')
+      		  .click(function() {
+      		    map.setView(new L.LatLng(44.88, -93.22), 11);
+      		  })
+      		  .appendTo($('#dd-map'));
+      		
+      		// Dot density layer
+          wax.tilejson('http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
             function(tilejson) {
-  		        map.addLayer(new wax.leaf.connector(tilejson));
-  		    
-        	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
-        	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
-        	    var ddurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png';
-        	    var options = { maxZoom: 15, minZoom: 2, scheme: 'tms' };
-        	    
-          		var baselayer = new L.TileLayer(baseurl, options);
-          		var ddlayer = new L.TileLayer(ddurl, options);
-          		var labelslayer = new L.TileLayer(labelsurl, options);
-          		
-          		// Add metro area button
-          		$('<div></div>')
-          		  .addClass('metro-button')
-          		  .attr('title', 'Click to zoom to the Twin Cities metro area.')
-          		  .click(function() {
-          		    map.setView(new L.LatLng(44.88, -93.22), 11);
-          		  })
-          		  .appendTo($('#dd-map'));
-          		
-          		// Dot density layer
-              wax.tilejson('http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
-                function(tilejson) {
-                  map.setView(new L.LatLng(46.1494,-94.4495), 7)
-                    .addLayer(baselayer)
-                    .addLayer(new wax.leaf.connector(tilejson))
-                    .addLayer(labelslayer);
+              console.log(tilejson)
+              
+              // Set view and add layers in appropriate order.
+              map.setView(new L.LatLng(46.1494, -94.4495), 7)
+                .addLayer(osmbaselayer)
+                .addLayer(baselayer)
+                .addLayer(new wax.leaf.connector(tilejson))
+                .addLayer(labelslayer);
+                
+              // Add wax interaction with UTFGrid data.
+              var interaction = wax.leaf.interaction()
+                .map(map)
+                .tilejson(tilejson)
+                //.on(wax.tooltip().parent(map._container).events());
+                .on({
+                  on: function(e) {
+                    var $tooltip = $('.tooltip');
+                    if ($tooltip.length  == 0) {
+                      $tooltip = $('<div></div>')
+                        .addClass('tooltip')
+                        .appendTo($('#dd-map'));
+                    }
+                    $tooltip.removeClass('hiding');
                     
-                  // Add wax interaction with UTFGrid data.
-                  var interaction = wax.leaf.interaction()
-                    .map(map)
-                    .tilejson(tilejson)
-                    .on(wax.tooltip().parent(map._container).events());
-                    
-                  // Manually add legend
-                  $('<div class="wax-legend">' + tilejson.legend + '</div>').appendTo($('#dd-map'));
-                }
-              );
+                    // Check if we should show
+                    if (typeof e.data.zip == 'undefined') {
+                      $tooltip.addClass('hiding');
+                    }
+                    else {
+                      console.log(e.data);
+                      $tooltip.html(e.data.zip + ' - ' + e.data.obama_total);
+                    }
+                     
+                  },
+                  off: function(e) { // Not fired…
+                  }
+                });
+                
+              // Manually add legend
+              $('<div class="wax-legend">' + tilejson.legend + '</div>').appendTo($('#dd-map'));
             }
           );
+      
     		});
       })(jQuery);
     </script>
+    
+    <!--
+    <script type="text/javascript" src="http://mapbox.com/wax/dist/modestmaps.js"></script>
+    <script type="text/javascript" src="http://mapbox.com/wax/dist/wax.mm.min.js"></script>
+    <script type="text/javascript">
+      var url = 'http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp';
+      wax.tilejson(url, function(tilejson) {
+          var map = new MM.Map('dd-map', new wax.mm.connector(tilejson));
+      
+          wax.mm.interaction()
+            .map(map)
+            .tilejson(tilejson)
+            .on(wax.tooltip().animate(true).parent(map.parent).events());
+      
+          map.setCenterZoom({ lat: 46.1494, lon: -94.4495 }, 7);
+        }
+      );
+    </script>
+    -->
   </div>
   <!-- Embed End -->
   
