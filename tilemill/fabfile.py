@@ -18,6 +18,8 @@ env.pg_dbname = 'minnpost_fec'
 env.pg_user = 'postgres'
 env.pg_pass = ''
 env.labels = None
+env.tile_scheme = 'tms'
+env.tile_template = '{z}/{x}/{y}'
 
 # Tilemill paths.  For Ubuntu
 if os.path.exists('/usr/share/tilemill'):
@@ -58,6 +60,13 @@ def map(name):
   Select map to work on.
   """
   env.map = name
+  
+
+def tile_scheme(scheme='tms'):
+  """
+  Change tilescheme.
+  """
+  env.tile_scheme = scheme
   
 
 def deploy_to_s3(concurrency):
@@ -146,7 +155,7 @@ def generate_tiles_from_mbtile():
     with settings(warn_only=True):
       local('rm -rf %(map)s/tiles-tmp' % env)
       local('rm -rf %(map)s/tiles' % env)
-      local('mb-util --scheme=tms %(map)s/exports/%(map)s.mbtiles %(map)s/tiles-tmp' % env)
+      local('mb-util --scheme=%(tile_scheme)s %(map)s/exports/%(map)s.mbtiles %(map)s/tiles-tmp' % env)
       local('mv "%(map)s/tiles-tmp/%(map_version)s/%(map_title)s" %(map)s/tiles' % env)
       local('mv %(map)s/tiles-tmp/metadata.json %(map)s/tiles/metadata.json' % env)
   else:
@@ -167,7 +176,7 @@ def generate_tilejson():
     tilejson = {}
     
     # Base values
-    tilejson['scheme'] = 'tms'
+    tilejson['scheme'] = env.tile_scheme
     tilejson['tilejson'] = '2.0.0'
     tilejson['id'] = env.map
     
@@ -185,25 +194,21 @@ def generate_tilejson():
     except KeyError:
       print 'Key error'
     
-    # Template is weird
-    tilejson['template'] = '{{#__location__}}{{/__location__}}'
-    try:
-      tilejson['template'] += '{{#__teaser__}}' + config['interactivity']['template_teaser'] + '{{/__teaser__}}'
-    except KeyError:
-      print 'No teaser.'
-    
-    try:
-      tilejson['template'] += '{{#__full__}}' + config['interactivity']['template_full'] + '{{/__full__}}'
-    except KeyError:
-      print 'No full template.'
+    # Template is in the metadata.json file
+    with open('%(map)s/tiles/metadata.json' % env, 'r') as j:
+      metadata = json.load(j)
+      try:
+        tilejson['template'] = metadata['template']
+      except KeyError:
+        tilejson['template'] = ''
     
     # Figure out template
     tilejson['grids'] = []
     tilejson['tiles'] = []
     for bucket in env.s3_buckets:
       env.s3_bucket = bucket 
-      tilejson['grids'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/{z}/{x}/{y}.grid.json' % env)
-      tilejson['tiles'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/{z}/{x}/{y}.png' % env)
+      tilejson['grids'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/%(tile_template)s.grid.json' % env)
+      tilejson['tiles'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/%(tile_template)s.png' % env)
     
     # Write regular and jsonp tilejson files
     tilejson_file = open('%(map)s/tiles/tilejson.json' % env, 'w')
