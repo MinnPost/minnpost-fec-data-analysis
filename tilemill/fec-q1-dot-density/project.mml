@@ -13,8 +13,15 @@
   "format": "png",
   "interactivity": {
     "layer": "fec-zip-stats",
-    "template_teaser": "<div class=\"popup-zip\"><strong>{{{zip}}}</strong></div>",
-    "fields": []
+    "template_teaser": "<div class=\"popup-zip\"><strong>{{{zip}}}</strong></div>\n<div class=\"popup-obama\"><strong>{{{obama_total}}}</strong></div>\n<div class=\"popup-romney\"><strong>{{{romney_total}}}</strong></div>\n<div class=\"popup-santorum\"><strong>{{{santorum_total}}}</strong></div>\n<div class=\"popup-gingrich\"><strong>{{{gingrich_total}}}</strong></div>\n<div class=\"popup-paul\"><strong>{{{paul_total}}}</strong></div>",
+    "fields": [
+      "zip",
+      "obama_total",
+      "romney_total",
+      "santorum_total",
+      "gingrich_total",
+      "paul_total"
+    ]
   },
   "minzoom": 6,
   "maxzoom": 14,
@@ -27,7 +34,7 @@
       "geometry": "polygon",
       "Datasource": {
         "type": "postgis",
-        "table": "( SELECT * FROM fec_amount_by_zip ) AS data",
+        "table": "( SELECT * FROM fec_amount_by_zip WHERE obama_total > 0 OR romney_total > 0 OR santorum_total > 0 OR gingrich_total > 0 OR paul_total > 0  ) AS data",
         "extent": "-97.239209,43.499356,-89.489226,49.384358",
         "key_field": "",
         "geometry_field": "the_geom",
@@ -35,7 +42,7 @@
         "user": "postgres",
         "dbname": "minnpost_fec",
         "id": "fec-zip-stats",
-        "project": "minnpost-fec-analysis",
+        "project": "fec-q1-dot-density",
         "srs": null
       },
       "id": "fec-zip-stats",
