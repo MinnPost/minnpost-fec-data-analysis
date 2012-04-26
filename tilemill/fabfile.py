@@ -169,6 +169,7 @@ def generate_tilejson():
     # Base values
     tilejson['scheme'] = 'tms'
     tilejson['tilejson'] = '2.0.0'
+    tilejson['id'] = env.map
     
     # Attempt to get values from config
     try:
@@ -177,13 +178,24 @@ def generate_tilejson():
       tilejson['version'] = config['version'] if config.has_key('version') else '1.0.0'
       tilejson['attribution'] = config['attribution'] if config.has_key('attribution') else ''
       tilejson['legend'] = config['legend'] if config.has_key('legend') else ''
-      tilejson['template'] = config['template'] if config.has_key('template') else ''
       tilejson['minzoom'] = config['minzoom'] if config.has_key('minzoom') else 0
       tilejson['maxzoom'] = config['maxzoom'] if config.has_key('maxzoom') else 22
       tilejson['bounds'] = config['bounds'] if config.has_key('bounds') else [-180, -90, 180, 90]
       tilejson['center'] = config['center'] if config.has_key('center') else null
     except KeyError:
       print 'Key error'
+    
+    # Template is weird
+    tilejson['template'] = '{{#__location__}}{{/__location__}}'
+    try:
+      tilejson['template'] += '{{#__teaser__}}' + config['interactivity']['template_teaser'] + '{{/__teaser__}}'
+    except KeyError:
+      print 'No teaser.'
+    
+    try:
+      tilejson['template'] += '{{#__full__}}' + config['interactivity']['template_full'] + '{{/__full__}}'
+    except KeyError:
+      print 'No full template.'
     
     # Figure out template
     tilejson['grids'] = []
@@ -192,8 +204,6 @@ def generate_tilejson():
       env.s3_bucket = bucket 
       tilejson['grids'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/{z}/{x}/{y}.grid.json' % env)
       tilejson['tiles'].append('http://%(s3_bucket)s.s3.amazonaws.com/%(project_name)s/%(map)s%(map_suffix)s/{z}/{x}/{y}.png' % env)
-        
-    print tilejson
     
     # Write regular and jsonp tilejson files
     tilejson_file = open('%(map)s/tiles/tilejson.json' % env, 'w')
