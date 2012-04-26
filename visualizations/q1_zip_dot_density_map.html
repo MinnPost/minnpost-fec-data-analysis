@@ -232,12 +232,17 @@
     
                 // Geocode with Mapquest
                 $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + encodeURI(request), function(value) {
+                  var mnBounds = new L.LatLngBounds(new L.LatLng(43.499356, -97.239209), new L.LatLng(49.384358, -89.489226));
                   // Use first response
                   value = value[0];
                   
                   // Check response
                   if (value === undefined) {
                     alert('We were unable turn your search terms, ' + request + ', into a geographical location.  Please be more specific, such as including zip code.');
+                  }
+                  // Check we are still mostly in Minnesota
+                  else if (!mnBounds.contains(new L.LatLng(value.lat, value.lon))) {
+                    alert('Sorry, but what you are looking for is outside of Minnesota.');
                   }
                   else {
                     // Adjust zoom level based on geography
