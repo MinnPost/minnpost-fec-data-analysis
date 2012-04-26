@@ -53,7 +53,7 @@
         width: 19px;
         height: 19px;
         background-color: #CCCCCC;
-        background: rgba(255, 255, 255, 0.75) url('images/bigcity.png') 2px 0px no-repeat;
+        background: rgba(255, 255, 255, 0.75) url('http://www.minnpost.com//sites/default/files/images/articles/icons/bigcity.png') 2px 0px no-repeat;
         cursor: pointer;
       }
       
@@ -67,8 +67,9 @@
         border-radius: 4px;
         width: 140px;
         height: 150px;
-        background-color: #CCCCCC;
-        background-color: rgba(255, 255, 255, 0.65);
+        background-color: #222222;
+        background-color: rgba(20, 20, 20, 0.65);
+        color: #E2E2E2;
         padding-top: 10px;
       }
       
@@ -86,14 +87,41 @@
         -webkit-border-radius: 4px;
         border-radius: 4px;
         min-width: 140px;
-        min-height: 100px;
-        background-color: #CCCCCC;
-        background-color: rgba(255, 255, 255, 0.65);
+        min-height: 75px;
+        background-color: #222222;
+        background-color: rgba(20, 20, 20, 0.65);
+        color: #E2E2E2;
+        text-align: right;
+        padding: 15px;
       }
-      .tooltip.hiding {
-        display: none;
+      .tooltip ul,
+      .tooltip ul li {
+        list-style: none;
+      }
+      
+      .tooltip table {
+        text-size: .75em;
+      }
+      .tooltip table tfoot th {
+        border: none;
+        border-top: 1px solid #222222;
+        text-align: right;
+        padding-right: .5em;
+      }
+      
+      .locate-form {
+        width: 330px;
+        float: right;
+        padding-bottom: 1em;
+        text-align: right;
       }
     </style>
+    
+    <form class="js-dependent locate-form">
+      <label for="geosearch">Search zip</label>
+      <input id="geosearch" type="text" class="form-text" />
+      <input type="submit" value="Go" class="form-submit" />
+    </form>
     
   	<div id="dd-map"></div>
   	
@@ -103,6 +131,61 @@
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/leaflet-0.3.1/leaflet.js"></script>
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/wax-master-20120329/wax.leaf.min.js"></script>
     <script type="text/javascript">
+      // Currency percent
+      function fPercent(num) {
+        return (num * 100).toFixed(2) + '%';
+      };
+      // Currency function
+      function fCurrency(num) {
+        num = num.toString().replace(/\$|\,/g, '');
+        if (isNaN(num)) num = "0";
+        sign = (num == (num = Math.abs(num)));
+        num = Math.floor(num * 100 + 0.50000000001);
+        cents = num % 100;
+        num = Math.floor(num / 100).toString();
+        if (cents < 10) cents = "0" + cents;
+        for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+          num = num.substring(0, num.length - (4 * i + 3)) + ',' + num.substring(num.length - (4 * i + 3));
+        
+        return (((sign) ? '' : '-') + '$' + num + '.' + cents);
+      };
+      function getTotal(data) {
+        var total = 0;
+        total += (data.obama_total) ? parseFloat(data.obama_total) : 0;
+        total += (data.romney_total) ? parseFloat(data.romney_total) : 0;
+        total += (data.santorum_total) ? parseFloat(data.santorum_total) : 0;
+        total += (data.gingrich_total) ? parseFloat(data.gingrich_total) : 0;
+        total += (data.paul_total) ? parseFloat(data.paul_total) : 0;
+        return total;
+      }
+    
+      // Format function
+      tooltipFormat = function(data) {
+        var output = '';
+        var total = getTotal(data);
+
+        output += '<h3>' + data.zip + '</h3>';
+        
+        if (total > 0) {
+          output += '<table>';
+          output += '<tfoot><tr><th>Total</th><th>' + fCurrency(total) + '</th><th></th></tr></tfoot>';
+          
+          output += '<tbody>';
+          output += data.obama_total ? '<tr><td>Obama</td><td>' + fCurrency(data.obama_total) + 
+            '</td><td>' + fPercent(parseFloat(data.obama_total) / total) + '</td></tr>' : '';
+          output += data.romney_total ? '<tr><td>Romney</td><td>' + fCurrency(data.romney_total) + 
+            '</td><td>' + fPercent(parseFloat(data.romney_total) / total) + '</td></tr>' : '';
+          output += data.santorum_total ? '<tr><td>Santorum</td><td>' + fCurrency(data.santorum_total) + 
+            '</td><td>' + fPercent(parseFloat(data.santorum_total) / total) + '</td></tr>' : '';
+          output += data.gingrich_total ? '<tr><td>Gingrich</td><td>' + fCurrency(data.gingrich_total) + 
+            '</td><td>' + fPercent(parseFloat(data.gingrich_total) / total) + '</td></tr>' : '';
+          output += data.paul_total ? '<tr><td>Paul</td><td>' + fCurrency(data.paul_total) + 
+            '</td><td>' + fPercent(parseFloat(data.paul_total) / total) + '</td></tr>' : '';
+          output += '</tbody></table>';
+        }
+        
+        return output;
+      };
   		
       // Namespace jQuery
       (function($) {
@@ -115,7 +198,7 @@
     	    var osmbaseurl = 'http://{s}.tiles.mapbox.com/v1/zzolo.map-rhqrrivf/{z}/{x}/{y}.png';
     	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
     	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
-      		var osmbaselayer = new L.TileLayer(osmbaseurl, options);
+      		var osmbaselayer = new L.TileLayer(osmbaseurl, { scheme: 'tms', attribution: 'Map data &copy; OpenStreetMap contributors, CC-BY-SA, and the FEC; imagery by MapBox and MinnPost.' });
       		var baselayer = new L.TileLayer(baseurl, options);
       		var labelslayer = new L.TileLayer(labelsurl, options);
       		
@@ -124,21 +207,52 @@
       		  .addClass('metro-button')
       		  .attr('title', 'Click to zoom to the Twin Cities metro area.')
       		  .click(function() {
-      		    map.setView(new L.LatLng(44.88, -93.22), 11);
+      		    map.setView(new L.LatLng(44.88, -93.22), 10);
       		  })
       		  .appendTo($('#dd-map'));
       		
       		// Dot density layer
           wax.tilejson('http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
             function(tilejson) {
-              console.log(tilejson)
-              
               // Set view and add layers in appropriate order.
-              map.setView(new L.LatLng(46.1494, -94.4495), 7)
+              map.setView(new L.LatLng(46.1494, -92.4495), 7)
                 .addLayer(osmbaselayer)
                 .addLayer(baselayer)
                 .addLayer(new wax.leaf.connector(tilejson))
                 .addLayer(labelslayer);
+                
+              // Show things
+              $('.js-dependent').show();
+              
+              // Handle search
+              $('form.locate-form').submit(function(e) {
+                e.preventDefault();
+                var request = $('input#geosearch').val();
+                if (!request) return;
+    
+                // Geocode with Mapquest
+                $.getJSON('http://open.mapquestapi.com/nominatim/v1/search?format=json&json_callback=?&countrycodes=us&limit=1&q=' + encodeURI(request), function(value) {
+                  // Use first response
+                  value = value[0];
+                  
+                  // Check response
+                  if (value === undefined) {
+                    alert('We were unable turn your search terms, ' + request + ', into a geographical location.  Please be more specific, such as including zip code.');
+                  }
+                  else {
+                    // Adjust zoom level based on geography
+                    if (value.type == 'state' || 
+                        value.type == 'county' || 
+                        value.type == 'maritime'  || 
+                        value.type == 'country' ||
+                        value.type == 'administrative') {
+                      map.setView(new L.LatLng(value.lat, value.lon), 8);
+                    } else {
+                      map.setView(new L.LatLng(value.lat, value.lon), 10);
+                    }
+                  }
+                });
+              });
                 
               // Add wax interaction with UTFGrid data.
               var interaction = wax.leaf.interaction()
@@ -153,19 +267,19 @@
                         .addClass('tooltip')
                         .appendTo($('#dd-map'));
                     }
-                    $tooltip.removeClass('hiding');
+                    $tooltip.show();
                     
                     // Check if we should show
                     if (typeof e.data.zip == 'undefined') {
                       $tooltip.addClass('hiding');
                     }
                     else {
-                      console.log(e.data);
-                      $tooltip.html(e.data.zip + ' - ' + e.data.obama_total);
+                      $tooltip.html(tooltipFormat(e.data));
                     }
                      
                   },
-                  off: function(e) { // Not fired…
+                  off: function(e) {
+                    $('.tooltip').hide();
                   }
                 });
                 
