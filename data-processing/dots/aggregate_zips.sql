@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS "public"."fec_amount_by_zip";
 CREATE TABLE "public"."fec_amount_by_zip" (
-	"zip" varchar(16) NOT NULL,
+	"zip" integer NOT NULL,
 	"the_geom" "public"."geometry",
 	"obama_total" float8,
 	"obama_cid" varchar(128),
@@ -23,7 +23,7 @@ WITH (OIDS=FALSE);
 
 INSERT INTO "fec_amount_by_zip"
 SELECT
-	zip."name" AS zip,
+	CAST(zip."name" AS INTEGER) AS zip,
 	zip."the_geom",
 	obama."total" AS obama_total,
 	obama."CommID" AS obama_cid,
@@ -85,6 +85,12 @@ FROM
 		GROUP BY SUBSTRING(s."ContZip", 1, 5), s."CommID", c."short_name") as paul
 		ON zip."name" = paul."zip"
 
+WHERE
+	obama.total > 0
+	OR obama.total > 0
+	OR santorum.total > 0
+	OR gingrich.total > 0
+	OR paul.total > 0
 ORDER BY
 	zip."name"
 ;

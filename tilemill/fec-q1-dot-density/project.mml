@@ -36,7 +36,7 @@
         "type": "postgis",
         "table": "( SELECT * FROM fec_amount_by_zip WHERE obama_total > 0 OR romney_total > 0 OR santorum_total > 0 OR gingrich_total > 0 OR paul_total > 0  ) AS data",
         "extent": "-97.239209,43.499356,-89.489226,49.384358",
-        "key_field": "",
+        "key_field": "zip",
         "geometry_field": "the_geom",
         "host": "localhost",
         "user": "postgres",
