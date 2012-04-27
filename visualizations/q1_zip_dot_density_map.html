@@ -68,9 +68,11 @@
         width: 140px;
         height: 150px;
         background-color: #222222;
-        background-color: rgba(20, 20, 20, 0.65);
+        background-color: rgba(20, 20, 20, 0.7);
         color: #E2E2E2;
         padding-top: 10px;
+        border: 1px solid #666666;
+        border: 1px solid rgba(98, 98, 98, 0.7);
       }
       
       .wax-legend ul,
@@ -89,10 +91,12 @@
         min-width: 140px;
         min-height: 75px;
         background-color: #222222;
-        background-color: rgba(20, 20, 20, 0.65);
+        background-color: rgba(20, 20, 20, 0.7);
         color: #E2E2E2;
         text-align: right;
         padding: 15px;
+        border: 1px solid #666666;
+        border: 1px solid rgba(98, 98, 98, 0.7);
       }
       .tooltip ul,
       .tooltip ul li {
@@ -118,7 +122,7 @@
     </style>
     
     <form class="js-dependent locate-form">
-      <label for="geosearch">Search zip</label>
+      <label for="geosearch">Search ZIP</label>
       <input id="geosearch" type="text" class="form-text" />
       <input type="submit" value="Go" class="form-submit" />
     </form>
@@ -190,11 +194,13 @@
       // Namespace jQuery
       (function($) {
     		$(document).ready(function() {
-  		    var map = new L.Map('dd-map', { maxZoom: 14, minZoom: 2 });
+  		    var map = new L.Map('dd-map', { maxZoom: 13, minZoom: 2 });
   		    
 	        // Define mn base and label layers.  We have to force the TMS version of mapbox
 	        // tiles.  See: https://github.com/mapbox/wax/issues/95
-    	    var options = { scheme: 'tms' };
+	        //
+	        // Using a single subdomain as upladoing to all the subdomains is not feasible.
+    	    var options = { scheme: 'tms', subdomains: 'a' };
     	    var osmbaseurl = 'http://{s}.tiles.mapbox.com/v1/zzolo.map-rhqrrivf/{z}/{x}/{y}.png';
     	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
     	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
@@ -207,13 +213,16 @@
       		  .addClass('metro-button')
       		  .attr('title', 'Click to zoom to the Twin Cities metro area.')
       		  .click(function() {
-      		    map.setView(new L.LatLng(44.88, -93.22), 10);
+      		    map.setView(new L.LatLng(44.88, -93.22), 9);
       		  })
       		  .appendTo($('#dd-map'));
       		
       		// Dot density layer
           wax.tilejson('http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
             function(tilejson) {
+              tilejson.tiles = [tilejson.tiles[0]];
+              tilejson.grids = [tilejson.grids[0]];
+            
               // Set view and add layers in appropriate order.
               map.setView(new L.LatLng(46.1494, -92.4495), 7)
                 .addLayer(osmbaselayer)
@@ -238,7 +247,7 @@
                   
                   // Check response
                   if (value === undefined) {
-                    alert('We were unable turn your search terms, ' + request + ', into a geographical location.  Please be more specific, such as including zip code.');
+                    alert('We were unable turn your search terms, ' + request + ', into a geographical location.  Please be more specific, such as including ZIP code.');
                   }
                   // Check we are still mostly in Minnesota
                   else if (!mnBounds.contains(new L.LatLng(value.lat, value.lon))) {
@@ -251,14 +260,18 @@
                         value.type == 'maritime'  || 
                         value.type == 'country' ||
                         value.type == 'administrative') {
-                      map.setView(new L.LatLng(value.lat, value.lon), 8);
+                      map.setView(new L.LatLng(value.lat, value.lon), 9);
                     } else {
-                      map.setView(new L.LatLng(value.lat, value.lon), 10);
+                      map.setView(new L.LatLng(value.lat, value.lon), 12);
                     }
                   }
                 });
               });
                 
+              // Placeholders for zips
+              var zipHighlight = {};
+              var zipsIndexed = {};
+              
               // Add wax interaction with UTFGrid data.
               var interaction = wax.leaf.interaction()
                 .map(map)
@@ -275,21 +288,38 @@
                     $tooltip.show();
                     
                     // Check if we should show
-                    if (typeof e.data.zip == 'undefined') {
-                      $tooltip.addClass('hiding');
-                    }
-                    else {
+                    if (typeof e.data.zip != 'undefined') {
                       $tooltip.html(tooltipFormat(e.data));
+                      
+                      // Highlight zip
+                      map.removeLayer(zipHighlight);
+                      zipHighlight = new L.GeoJSON();
+                      zipHighlight.addGeoJSON(zipsIndexed[e.data.zip]);
+                      map.addLayer(zipHighlight);
                     }
                      
                   },
                   off: function(e) {
                     $('.tooltip').hide();
+                    map.removeLayer(zipHighlight);
                   }
                 });
                 
               // Manually add legend
               $('<div class="wax-legend">' + tilejson.legend + '</div>').appendTo($('#dd-map'));
+              
+              
+              // Lets lazily add zip highlighting
+              $.getJSON('data/mn_zips.geojson', function(zips) {
+                // Index zips
+                var i;
+                for (i in zips.features) {
+                  zipsIndexed[zips.features[i].properties.zip] = zips.features[i];
+                }
+                
+                console.log(zipsIndexed);
+              });
+              
             }
           );
       

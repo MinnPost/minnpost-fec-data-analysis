@@ -62,6 +62,10 @@ To process data for ```q1_top_contributions.html```, do the following:
 2. Convert to JSON.  I exported the query results to CSV, then used CSVKit's ```csvjson``` to convert to JSON.
 3. Copy JSON into the ```visualizations/q1_top_contributions.html```.
 
+### Q1 Dot Density
+
+```ogr2ogr -f GeoJSON mn_zips.geojson "PG:dbname=minnpost_fec host=localhost user=postgres" -sql "SELECT zip, transform(simplify(transform(the_geom, 2249), 3000),4326) AS coordinates FROM fec_amount_by_zip"```
+
 ## Technologies Used
 
  - Postgres, PostGIS
