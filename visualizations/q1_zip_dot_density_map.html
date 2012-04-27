@@ -129,12 +129,21 @@
     
   	<div id="dd-map"></div>
   	
-  	<p class="footnote">Data from the <a href="http://www.fec.gov/">Federal Election Commission</a>.</p>
+  	<p class="footnote">Data from the <a href="http://www.fec.gov/">Federal Election Commission</a> and the <a href="http://www.census.gov/">US Census Bureau</a>.  Note that the ZIP code highlighting is approximate.</p>
   
     <script type="text/javascript">window.jQuery || document.write('<script type="text/javascript" src="https://s3.amazonaws.com/data.minnpost/js/bubbletree-master-20120410/lib/jquery-1.5.2.min.js"><\/script>')</script>
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/leaflet-0.3.1/leaflet.js"></script>
     <script type="text/javascript" src="http://data.minnpost.s3.amazonaws.com/js/wax-master-20120329/wax.leaf.min.js"></script>
     <script type="text/javascript">
+      // Function to check for empty objects
+      function isEmptyObject(obj) {
+        for (var prop in obj) {
+          if (Object.prototype.hasOwnProperty.call(obj, prop)) {
+            return false;
+          }
+        }
+        return true;
+      }
       // Currency percent
       function fPercent(num) {
         return (num * 100).toFixed(2) + '%';
@@ -232,6 +241,31 @@
                 
               // Show things
               $('.js-dependent').show();
+                
+              // Placeholders for zips
+              var zipHighlight = {};
+              var searchHighlight = {};
+              var zipsIndexed = {};
+              var highlightStyle = {
+                stroke: true,
+                color: '#BBBBBB',
+                weight: 1,
+                opacity: 0.5,
+                fill: true,
+                fillColor: '#CCCCCC',
+                fillOpacity: 0.2,
+                clickable: false
+              };
+              var searchStyle = {
+                stroke: true,
+                color: '#EEEEEE',
+                weight: 4,
+                opacity: 0.8,
+                fill: true,
+                fillColor: '#CCCCCC',
+                fillOpacity: 0.2,
+                clickable: false
+              };
               
               // Handle search
               $('form.locate-form').submit(function(e) {
@@ -264,13 +298,19 @@
                     } else {
                       map.setView(new L.LatLng(value.lat, value.lon), 12);
                     }
+                    
+                    // Highlight if zip
+                    if (!isEmptyObject(zipsIndexed) && typeof zipsIndexed[request] != 'undefined') {
+                      // Highlight zip
+                      map.removeLayer(searchHighlight);
+                      searchHighlight = new L.GeoJSON();
+                      searchHighlight.addGeoJSON(zipsIndexed[request]);
+                      searchHighlight.setStyle(searchStyle);
+                      map.addLayer(searchHighlight);
+                    }
                   }
                 });
               });
-                
-              // Placeholders for zips
-              var zipHighlight = {};
-              var zipsIndexed = {};
               
               // Add wax interaction with UTFGrid data.
               var interaction = wax.leaf.interaction()
@@ -292,12 +332,14 @@
                       $tooltip.html(tooltipFormat(e.data));
                       
                       // Highlight zip
-                      map.removeLayer(zipHighlight);
-                      zipHighlight = new L.GeoJSON();
-                      zipHighlight.addGeoJSON(zipsIndexed[e.data.zip]);
-                      map.addLayer(zipHighlight);
+                      if (!isEmptyObject(zipsIndexed)) {
+                        map.removeLayer(zipHighlight);
+                        zipHighlight = new L.GeoJSON();
+                        zipHighlight.addGeoJSON(zipsIndexed[e.data.zip]);
+                        zipHighlight.setStyle(highlightStyle);
+                        map.addLayer(zipHighlight);
+                      }
                     }
-                     
                   },
                   off: function(e) {
                     $('.tooltip').hide();
@@ -316,13 +358,9 @@
                 for (i in zips.features) {
                   zipsIndexed[zips.features[i].properties.zip] = zips.features[i];
                 }
-                
-                console.log(zipsIndexed);
               });
-              
             }
           );
-      
     		});
       })(jQuery);
     </script>
