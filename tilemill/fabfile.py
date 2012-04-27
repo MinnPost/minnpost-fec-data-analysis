@@ -40,7 +40,8 @@ def production():
   Work on production environment
   """
   env.settings = 'production'
-  env.s3_buckets = ['a.tiles.minnpost', 'b.tiles.minnpost', 'c.tiles.minnpost', 'd.tiles.minnpost']
+  #env.s3_buckets = ['a.tiles.minnpost', 'b.tiles.minnpost', 'c.tiles.minnpost', 'd.tiles.minnpost']
+  env.s3_buckets = ['a.tiles.minnpost']
   env.s3_template = 'http://{s}.tiles.minnpost.s3.amazonaws.com'
   env.acl = 'acl-public'
 
