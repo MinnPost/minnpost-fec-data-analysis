@@ -1,4 +1,4 @@
-Some helpful documentation on FEC data.
+Some helpful documentation on FEC data.  Also see: https://github.com/bycoffe/fec-guide
 
 ## Explanation of FEC Data
 
