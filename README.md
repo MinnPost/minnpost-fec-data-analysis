@@ -64,13 +64,17 @@ To process data for ```q1_top_contributions.html```, do the following:
 
 ### Q1 Dot Density
 
-```ogr2ogr -f GeoJSON mn_zips.geojson "PG:dbname=minnpost_fec host=localhost user=postgres" -sql "SELECT zip, transform(simplify(transform(the_geom, 2249), 3000),4326) AS coordinates FROM fec_amount_by_zip"```
+1. Render tiles and upload to S3.  Do note that this will take some time.  The final arguments (1,13) are zoom levels and can be changed if needed: ```cd tilemill;  fab map:"fec-q1-dot-density" production export_deploy:32:1:13```
+2. Create simplified ZIP geojson dataset.  The transform is needed as the SIMPLIFY function does not handle Lat,Lon (4326) correctly. ```ogr2ogr -f GeoJSON mn_zips.geojson "PG:dbname=minnpost_fec host=localhost user=postgres" -sql "SELECT zip, transform(simplify(transform(the_geom, 2249), 3000), 4326) AS coordinates FROM fec_amount_by_zip"```
 
 ## Technologies Used
 
  - Postgres, PostGIS
  - FEC-Scraper
  - Scraper Wiki
+ - TileMill
+ - Englewood
+ - (many more)
  
 ## Other Data Sources
 
