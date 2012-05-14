@@ -228,10 +228,10 @@
 	        // tiles.  See: https://github.com/mapbox/wax/issues/95
 	        //
 	        // Using a single subdomain as upladoing to all the subdomains is not feasible.
-    	    var options = { scheme: 'tms', subdomains: 'a' };
+    	    var options = { scheme: 'tms' };
     	    var osmbaseurl = 'http://{s}.tiles.mapbox.com/v1/zzolo.map-rhqrrivf/{z}/{x}/{y}.png';
-    	    var baseurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
-    	    var labelsurl = 'http://{s}.tiles.minnpost.s3.amazonaws.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
+    	    var baseurl = 'http://{s}.tiles.minnpost.com/minnpost-basemaps/minnpost-minnesota-night-no-labels/{z}/{x}/{y}.png';
+    	    var labelsurl = 'http://{s}.tiles.minnpost.com/minnpost-basemaps/minnpost-minnesota-night-labels/{z}/{x}/{y}.png';
       		var osmbaselayer = new L.TileLayer(osmbaseurl, { scheme: 'tms', attribution: 'Map data &copy; OpenStreetMap contributors, CC-BY-SA, and the FEC; imagery by MapBox and MinnPost.' });
       		var baselayer = new L.TileLayer(baseurl, options);
       		var labelslayer = new L.TileLayer(labelsurl, options);
@@ -246,10 +246,21 @@
       		  .appendTo($('#dd-map'));
       		
       		// Dot density layer
-          wax.tilejson('http://a.tiles.minnpost.s3.amazonaws.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
+          wax.tilejson('http://a.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/tilejson.jsonp',
             function(tilejson) {
-              tilejson.tiles = [tilejson.tiles[0]];
-              tilejson.grids = [tilejson.grids[0]];
+              // Manually add tile URLS
+              tilejson.tiles = [
+                "http://a.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png",
+                "http://b.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png",
+                "http://c.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png",
+                "http://d.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.png"
+              ];
+              tilejson.grids = [
+                "http://a.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.grid.json",
+                "http://b.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.grid.json",
+                "http://c.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.grid.json",
+                "http://d.tiles.minnpost.com/minnpost-fec-data-analysis/fec-q1-dot-density/{z}/{x}/{y}.grid.json"
+              ];
             
               // Set view and add layers in appropriate order.
               map.setView(new L.LatLng(46.1494, -92.4495), 7)
