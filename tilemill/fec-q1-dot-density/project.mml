@@ -73,6 +73,8 @@
       "name": "fec-dot-density"
     }
   ],
+  "scale": 1,
+  "metatile": 2,
   "name": "2012 Q1 Dot Density",
   "description": "Dot density map of presidential campaign contributions from Minnesota for the first quarter of 2012.",
   "attribution": "",
