@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>MN Temperature Records 2012</title>
+  <title>MN FEC Q1</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <link rel="shortcut icon" href="http://www.minnpost.com/sites/default/themes/siteskin/favicon.ico" type="image/x-icon" />
   <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
@@ -92,11 +92,15 @@ addthis_config = Drupal.settings.addthis.config_default; addthis_share = Drupal.
         margin-top: 1em;
         clear: both;
       }
+      
+      .map-wrapper {
+        position: relative;
+      }
         
       #dd-map {
+        position: relative;
         width: 100%;
         height: 600px;
-        clear: both;
       }
       
       .metro-button {
@@ -195,13 +199,17 @@ addthis_config = Drupal.settings.addthis.config_default; addthis_share = Drupal.
     
     <p class="js-dependent loading-zips">Loading ZIPs...</p>
     
-    <form class="js-dependent locate-form">
-      <label for="geosearch">Search ZIP</label>
-      <input id="geosearch" type="text" class="form-text" />
-      <input type="submit" value="Go" class="form-submit" />
-    </form>
+    <div class="clear-block">
+      <form class="js-dependent locate-form">
+        <label for="geosearch">Search ZIP</label>
+        <input id="geosearch" type="text" class="form-text" />
+        <input type="submit" value="Go" class="form-submit" />
+      </form>
+    </div>
     
-  	<div id="dd-map"></div>
+    <div class="map-wrapper">
+  	  <div id="dd-map"></div>
+    </div>
   	
   	<p class="footnote">Data from the <a href="http://www.fec.gov/">Federal Election Commission</a> and the <a href="http://www.census.gov/">US Census Bureau</a>.  Note that the ZIP code highlighting is approximate.</p>
   
@@ -290,7 +298,7 @@ addthis_config = Drupal.settings.addthis.config_default; addthis_share = Drupal.
       		  .appendTo($('#dd-map'));
       		
       		// Center map
-          map.setView(new L.LatLng(46.1494, -93.4495), 7);
+          map.setView(new L.LatLng(46.1494, -93.4495), 6);
             
           // Show things
           $('.js-dependent').show();
